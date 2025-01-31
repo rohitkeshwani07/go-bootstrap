@@ -11,12 +11,15 @@ import (
 
 const MaxTimeGracefullShutdown = 60 * time.Second
 
-/*
-TODO: Create simple APIs for fx.Provide with Annotate.
-Example:
+func ProvideWithBinding(constructor interface{}, iface interface{}) fx.Option {
+	return fx.Provide(
+		fx.Annotate(
+			constructor,
+			fx.As(iface),
+		),
+	)
+}
 
-	fxwrapper.ProvideNamedValueWithBinding("echo", NewEchoHandler, new(Route)),
-*/
 func main() {
 	fx.New(
 		fx.StopTimeout(MaxTimeGracefullShutdown),
@@ -24,11 +27,8 @@ func main() {
 			router.NewRouter,
 			routes.NewRoutes,
 			users.NewUserService,
-			fx.Annotate(
-				users.NewBusinessLogic,
-				fx.As(new(users.IBusinessLogic)),
-			),
 		),
+		ProvideWithBinding(users.NewBusinessLogic, new(users.IBusinessLogic)),
 		fx.Invoke(router.NewHTTPServer),
 	).Run()
 }
