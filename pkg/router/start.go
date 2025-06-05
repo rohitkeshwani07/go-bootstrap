@@ -2,10 +2,12 @@ package router
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rohitkeshwani07/go-bootstrap/pkg/config"
 	"go.uber.org/fx"
 )
 
@@ -15,9 +17,10 @@ func NewRouter(routes IRoutes) *gin.Engine {
 	return r
 }
 
-func NewHTTPServer(lc fx.Lifecycle, r *gin.Engine) {
+func NewHTTPServer(cfg *config.Config, lc fx.Lifecycle, r *gin.Engine) {
+	addr := fmt.Sprintf(":%s", cfg.Server.Port)
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    addr,
 		Handler: r,
 	}
 
